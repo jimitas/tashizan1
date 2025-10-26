@@ -55,12 +55,8 @@ export const useDragDrop = (onDropCallback?: () => void) => {
         globalDragged.parentNode.removeChild(globalDragged);
       }
 
-      // 要素を複製して新しく追加（元の要素が既に削除されている可能性があるため）
-      const clonedElement = globalDragged.cloneNode(true) as HTMLElement;
-      clonedElement.setAttribute("draggable", "true");
-      clonedElement.className = globalDragged.className;
-
-      dropTarget.appendChild(clonedElement);
+      // 元の要素を直接移動（cloneNodeを使うとイベントリスナーが失われる）
+      dropTarget.appendChild(globalDragged);
       se.pi.play();
 
       // グローバル変数をクリア
