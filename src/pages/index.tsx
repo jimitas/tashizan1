@@ -143,7 +143,6 @@ export default function Tashizan1() {
     if (answer != myAnswer)
       setTimeout(() => {
         setFlag(true);
-        answer = "";
       }, 1000);
   };
 
@@ -157,7 +156,6 @@ export default function Tashizan1() {
       el_text.current!.innerHTML = "すうじを　おすか、こたえを　いれてから「こたえあわせ」";
       setTimeout(() => {
         el_text.current!.innerHTML = "";
-        answer = "";
       }, 1000);
     }
   };

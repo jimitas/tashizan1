@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import * as se from "src/components/se";
 
 // グローバルスコープでdragged変数を管理（複数コンポーネント間で共有しないように注意）
@@ -5,25 +6,22 @@ let globalDragged: HTMLElement | null = null;
 
 export const useDragDrop = (onDropCallback?: () => void) => {
   // ドラッグ開始の操作
-  function dragStart(e: DragEvent) {
+  const dragStart = useCallback(function dragStart(e: DragEvent) {
     const target = e.target as HTMLElement;
     if (target.draggable === true) {
       globalDragged = target;
     }
-  }
+  }, []);
 
   // ドラッグ中の操作
-  function dragOver(e: DragEvent) {
+  const dragOver = useCallback(function dragOver(e: DragEvent) {
     e.preventDefault();
-  }
+  }, []);
 
   // ドラッグ終了後の操作
-  function dropEnd(e: DragEvent) {
+  const dropEnd = useCallback(function dropEnd(e: DragEvent) {
     e.preventDefault();
     const target = e.target as HTMLElement;
-
-    // デバッグ用アラート（ドロップ位置の確認）
-    // alert(`ドロップテスト\nターゲット要素: ${target.tagName}\nクラス: ${target.className}\nglobalDragged存在: ${globalDragged ? 'あり' : 'なし'}\nglobalDragged内容: ${globalDragged?.textContent || 'なし'}`);
 
     // droppable-elemクラスを持つ要素を探す（バブリング対応）
     let dropTarget = target;
@@ -36,20 +34,7 @@ export const useDragDrop = (onDropCallback?: () => void) => {
       attempts++;
     }
 
-    // ドロップ可能な要素が見つかったか確認
-    // const isDroppable = dropTarget && dropTarget.className.match(/droppable-elem/);
-    // alert(`ドロップ可能判定\ndroppable要素: ${isDroppable ? '見つかった' : '見つからない'}\n要素: ${dropTarget?.tagName || 'なし'}\nクラス: ${dropTarget?.className || 'なし'}`);
-
-    // parentNodeの存在確認を詳細に
-    //   element: globalDragged,
-    //   parentNode: globalDragged?.parentNode,
-    //   parentId: globalDragged?.parentNode && 'id' in globalDragged.parentNode ? globalDragged.parentNode.id : 'なし',
-    //   isConnected: globalDragged?.isConnected
-    // });
-
     if (dropTarget && dropTarget.className.match(/droppable-elem/) && globalDragged) {
-      // alert('ドロップ実行します！');
-
       // 親要素が存在する場合のみremoveChild
       if (globalDragged.parentNode) {
         globalDragged.parentNode.removeChild(globalDragged);
@@ -66,28 +51,26 @@ export const useDragDrop = (onDropCallback?: () => void) => {
       if (onDropCallback) {
         onDropCallback();
       }
-    } else {
-      // alert(`ドロップ失敗\n理由:\n- droppable要素: ${dropTarget ? 'あり' : 'なし'}\n- globalDragged: ${globalDragged ? 'あり' : 'なし'}`);
     }
-  }
+  }, [onDropCallback]);
 
   // タッチ開始の操作
-  function touchStart(e: TouchEvent) {
+  const touchStart = useCallback(function touchStart(e: TouchEvent) {
     e.preventDefault();
-  }
+  }, []);
 
   // ドラッグ中の操作
-  function touchMove(e: TouchEvent) {
+  const touchMove = useCallback(function touchMove(e: TouchEvent) {
     e.preventDefault();
     const draggedElem = e.target as HTMLElement;
     const touch = e.changedTouches[0];
     draggedElem.style.position = "fixed";
     draggedElem.style.top = touch.pageY - window.pageYOffset - draggedElem.offsetHeight / 2 + "px";
     draggedElem.style.left = touch.pageX - window.pageXOffset - draggedElem.offsetWidth / 2 + "px";
-  }
+  }, []);
 
   // ドラッグ終了後の操作
-  function touchEnd(e: TouchEvent) {
+  const touchEnd = useCallback(function touchEnd(e: TouchEvent) {
     e.preventDefault();
     const droppedElem = e.target as HTMLElement;
     droppedElem.style.position = "";
@@ -109,7 +92,7 @@ export const useDragDrop = (onDropCallback?: () => void) => {
         onDropCallback();
       }
     }
-  }
+  }, [onDropCallback]);
 
   return { dragStart, dragOver, dropEnd, touchStart, touchMove, touchEnd };
 };
